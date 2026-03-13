@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spinning Image Screensaver</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --spin-speed: 5s;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: sans-serif;
+        }
+      
+        #image-container {
+            display: none; 
+            animation: spin var(--spin-speed) linear infinite;
+        }
+
+        #display-image {
+            max-width: none;
+            display: block;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+      
+        #settings-ui {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(40, 40, 40, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        kbd {
+            background: #444;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="settings-ui">
+        <h2>Settings <small>(Press <kbd>Tab</kbd> to hide)</small></h2>
+        
+        <div class="setting-item">
+            <label>Upload Image:</label>
+            <input type="file" id="image-input" accept="image/*">
+        </div>
+
+        <div class="setting-item">
+            <label>Spin Speed (Seconds per rotation):</label>
+            <input type="range" id="speed-slider" min="0.1" max="10" step="0.1" value="5">
+        </div>
+
+        <div class="setting-item">
+            <label>Background Color:</label>
+            <input type="color" id="bg-picker" value="#000000">
+        </div>
+    </div>
+
+    <div id="image-container">
+        <img id="display-image" src="" alt="">
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('image-input');
+        const displayImage = document.getElementById('display-image');
+        const imageContainer = document.getElementById('image-container');
+        const settingsUi = document.getElementById('settings-ui');
+        const speedSlider = document.getElementById('speed-slider');
+        const bgPicker = document.getElementById('bg-picker');
+      
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    displayImage.src = event.target.result;
+                    imageContainer.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+      
+        speedSlider.addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--spin-speed', `${e.target.value}s`);
+        });
+      
+        bgPicker.addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--bg-color', e.target.value);
+        });
+      
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                settingsUi.classList.toggle('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
